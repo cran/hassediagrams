@@ -2,8 +2,8 @@ Package: hassediagrams
 Type: Package
 Title: Hasse Diagram of the Layout Structure and Restricted Layout
         Structure
-Version: 1.0
-Date: 2025-06-01
+Version: 1.1
+Date: 2025-08-21
 Authors@R: 
     c(person(given = "Damianos", family = "Michaelides", role = c("aut", "cre"), email = "dm3g15@soton.ac.uk"),
       person(given = "Simon", family = "Bate", role = c("aut"), email = "simon.t.bate@gsk.com"),
@@ -21,9 +21,9 @@ LazyData: true
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2025-06-07 10:28:50 UTC; damianosmichaelides
+Packaged: 2025-08-21 20:04:16 UTC; damianosmichaelides
 Author: Damianos Michaelides [aut, cre],
   Simon Bate [aut],
   Marion Chatfield [aut]
 Repository: CRAN
-Date/Publication: 2025-06-11 13:00:05 UTC
+Date/Publication: 2025-08-21 20:22:11 UTC

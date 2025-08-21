@@ -166,14 +166,24 @@ The \code{\link[hassediagrams]{hasserls}} function evaluates the design in order
 confounded degrees of freedom across the design. It is not recommended to perform this evaluation for large designs, 
 due to the potential high computational cost. This can be controlled using the \code{check.confound.df = "N"} option. 
 
-Objects that contain Unicode characters, e.g., u2192 or u2297 must be handled by Unicode friendly font families. Common font families that work with Unicode characters are: 
-for Windows: Cambria, Embrima, Segoe UI Symbol, Arial Unicode MS, and 
-for macOS: AppleMyungjo, .SF Compact Rounded, Arial Unicode MS, .SF Compact, .SF NS Rounded.
+
+The rendering of Unicode symbols (e.g., u2297, u2192) in the Hasse diagram depends on the operating system and the font selected in hasse.font.
+
+macOS / Linux:
+Most system fonts that support Unicode work directly in plotting and PDF output without explicit registration. In many cases, the default "sans" family is sufficient for PDF rendering of these symbols.
+However, for on-screen rendering usually unicode-friendly fonts like "AppleMyungjo", "Arial Unicode MS", .SF Compact, and "Noto Sans Math" are needed. 
+
+Windows:
+Base R plotting often requires explicit font registration before the font can be used. Even if the font is installed, it may not be accessible to the graphics device until registered.
+Unicode-friendly fonts are "Lucida Sans Unicode", "Arial Unicode MS", "Segoe UI Symbol", "Cambria", "Noto Sans Math" and "Ebrima". 
 The aforementioned fonts may not not be available in your R session. The available system fonts can be printed by systemfonts::system_fonts()$family.
 System available fonts can be imported by running showtext::font_import() or extrafont::font_import().
 To check which fonts have been successfully imported, run showtext::fonts() or extrafont::fonts().
 The Arial Unicode MS font can be downloaded from online sources.
 The Noto Sans Math font can be installed using sysfonts::font_add_google("Noto Sans Math").
+For Windows, fonts might not be accessible to the graphics device until registered using:
+windowsFonts(LucidaSansUnicode = windowsFont("Lucida Sans Unicode"))
+adapted to the font need to use.
 }
 \examples{
 \donttest{

@@ -5,7 +5,7 @@
 \alias{analytical}
 \title{A cross-nested design for an analytical method investigation}
 \format{
-A data frame of 192 observations on 8 variables/factors:
+A data frame of 192 observations on 8 factors:
 \describe{
   \item{Site}{Categoric factor with levels 1 and 2.}
   \item{Analyst}{Categoric factor with levels 1-4.}

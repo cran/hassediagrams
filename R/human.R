@@ -2,7 +2,7 @@
 #'
 #' This is a block design to compare two methods (mouse and stylus) of drawing a map in a computer file. The design involved 12 subjects randomised in 6 days and 2 tests (morning/afternoon) within each day, across 2 rooms. The design is based on 2x2 Latin squares; see Example 7 Brien and Bailey (2006) for more details.
 #'
-#' @format A data frame of 24 observations on 7 variables. The 7 variables/factors included in the design are:
+#' @format A data frame of 24 observations on 7 factors The 7 factors included in the design are:
 #' \describe{
 #'   \item{Subject}{Categoric factor with levels 1-12.}
 #'   \item{Day}{Categoric factor with levels 1-6.}

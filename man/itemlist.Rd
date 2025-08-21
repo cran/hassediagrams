@@ -8,12 +8,12 @@
 itemlist(datadesign, randomfacsid = NULL)
 }
 \arguments{
-\item{datadesign}{A data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables/factors 
-in the experimental design. The dataframe should only include the variables/factors/columns that the user wants to evaluate in the 
+\item{datadesign}{A data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the factors 
+in the experimental design. The dataframe should \strong{only} include the factors/columns that the user wants to evaluate in the 
 consecutive \code{\link[hassediagrams]{hasserls}} function to generate the Hasse diagram of the restricted layout structure.}
 
 \item{randomfacsid}{An optional vector specifying whether the factors are defined as fixed (entry = 0) or random (entry = 1). 
-The default choice is \code{NULL} and the function automatically sets all entries to 0. The length of the vector should be equal to the number of variables/factors in the design, i.e., the length of the vector should be equal to the number of columns of the argument \code{datadesign}.}
+The default choice is \code{NULL} and the function automatically sets all entries to 0. The length of the vector should be equal to the number of factors in the design, i.e., the length of the vector should be equal to the number of columns of the argument \code{datadesign}.}
 }
 \value{
 The function returns an object of class \code{"rls"} which is a list with the following components:
@@ -40,7 +40,7 @@ The function returns an object of class \code{"rls"} which is a list with the fo
 in the layout structure, and the second column has "Mean" for the first entry and "NULL" for the remaining entries.
 }
 \description{
-Returns an object of class \code{"rls"} that contains the structural objects of the layout structure. The output can be used in a consecutive function to generate the Hasse diagram of the restricted layout structure of the experimental design.
+Returns an object of class \code{"rls"} that contains the structural objects of the layout structure. The output can be used in a consecutive function to generate the Hasse diagram of the restricted layout structure of the experimental design. All factors are treated as categorical.
 }
 \details{
 The function requires a dataframe containing the variables corresponding to the experimental factors only (i.e., no response variables). 

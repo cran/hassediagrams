@@ -1,4 +1,4 @@
-Sequence,Subject,Period,Treatment,Observation
+Sequence,Patient,Period,Treatment,Observation
 1,1,1,CHX1,1
 1,1,2,CHX2,2
 1,1,3,Saline,3

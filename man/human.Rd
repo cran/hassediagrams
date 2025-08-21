@@ -5,7 +5,7 @@
 \alias{human}
 \title{A block design for an experiment in human-computer interaction}
 \format{
-A data frame of 24 observations on 7 variables. The 7 variables/factors included in the design are:
+A data frame of 24 observations on 7 factors The 7 factors included in the design are:
 \describe{
   \item{Subject}{Categoric factor with levels 1-12.}
   \item{Day}{Categoric factor with levels 1-6.}

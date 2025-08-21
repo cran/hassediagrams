@@ -2,7 +2,7 @@
 #'
 #' The reliability of an analytical method was assessed in an experiment consisting of three batches of material, analysed by four analysts, two at each site. Within each site, there were two chromatographic systems and two columns. For each batch/analyst/system/column combination, two preparations (dissolved samples) were made. From each preparation, two injections were performed.
 #'
-#' @format A data frame of 192 observations on 8 variables/factors:
+#' @format A data frame of 192 observations on 8 factors:
 #' \describe{
 #'   \item{Site}{Categoric factor with levels 1 and 2.}
 #'   \item{Analyst}{Categoric factor with levels 1-4.}

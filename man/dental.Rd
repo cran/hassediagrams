@@ -5,10 +5,10 @@
 \alias{dental}
 \title{A crossover design for a dental study}
 \format{
-A crossover design of 72 runs on 5 variables/factors. The 5 variables/factors included in the design are:
+A crossover design of 72 runs on 5 factors. The 5 factors included in the design are:
 \describe{
   \item{Sequence}{Categoric factor with levels 1-6.}
-  \item{Subject}{Categoric factor with levels 1-32.}
+  \item{Patient}{Categoric factor with levels 1-32.}
   \item{Period}{Categoric factor with levels 1-3.}
   \item{Treatment}{Categoric factor with levels CHX1, CHX2 and Saline.}
   \item{Observation}{Categoric factor with levels 1-72.}

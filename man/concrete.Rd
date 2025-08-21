@@ -5,7 +5,7 @@
 \alias{concrete}
 \title{A fractional factorial design for investigating asphalt concrete production}
 \format{
-A half fraction factorial design of 16 runs on 6 variables/factors. The 6 variables/factors, each at two levels, included in the design are:
+A half fraction factorial design of 16 runs on 6 factors. The 6 factors, each at two levels, included in the design are:
 \describe{
   \item{Aggregate gradation (AG)}{Categoric factor with levels being fine and coarse.}
   \item{Compaction temperature (CoT)}{Numeric factor with low 250 and high 300.}

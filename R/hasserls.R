@@ -102,14 +102,24 @@
 #' confounded degrees of freedom across the design. It is not recommended to perform this evaluation for large designs, 
 #' due to the potential high computational cost. This can be controlled using the \code{check.confound.df = "N"} option. 
 #' 
-#' Objects that contain Unicode characters, e.g., u2192 or u2297 must be handled by Unicode friendly font families. Common font families that work with Unicode characters are: 
-#' for Windows: Cambria, Embrima, Segoe UI Symbol, Arial Unicode MS, and 
-#' for macOS: AppleMyungjo, .SF Compact Rounded, Arial Unicode MS, .SF Compact, .SF NS Rounded.
+#' 
+#' The rendering of Unicode symbols (e.g., u2297, u2192) in the Hasse diagram depends on the operating system and the font selected in hasse.font.
+#' 
+#' macOS / Linux:
+#' Most system fonts that support Unicode work directly in plotting and PDF output without explicit registration. In many cases, the default "sans" family is sufficient for PDF rendering of these symbols.
+#' However, for on-screen rendering usually unicode-friendly fonts like "AppleMyungjo", "Arial Unicode MS", .SF Compact, and "Noto Sans Math" are needed. 
+#' 
+#' Windows:
+#' Base R plotting often requires explicit font registration before the font can be used. Even if the font is installed, it may not be accessible to the graphics device until registered.
+#' Unicode-friendly fonts are "Lucida Sans Unicode", "Arial Unicode MS", "Segoe UI Symbol", "Cambria", "Noto Sans Math" and "Ebrima". 
 #' The aforementioned fonts may not not be available in your R session. The available system fonts can be printed by systemfonts::system_fonts()$family.
 #' System available fonts can be imported by running showtext::font_import() or extrafont::font_import().
 #' To check which fonts have been successfully imported, run showtext::fonts() or extrafont::fonts().
 #' The Arial Unicode MS font can be downloaded from online sources.
 #' The Noto Sans Math font can be installed using sysfonts::font_add_google("Noto Sans Math").
+#' For Windows, fonts might not be accessible to the graphics device until registered using:
+#' windowsFonts(LucidaSansUnicode = windowsFont("Lucida Sans Unicode"))
+#' adapted to the font need to use. 
 #' 
 #' @author
 #' Damianos Michaelides, Simon Bate, and Marion Chatfield
@@ -129,7 +139,6 @@
 #' 
 #' @importFrom stats anova aov as.formula model.matrix.default
 #' @importFrom utils capture.output
-#' 
 #' 
 #' 
 #' @examples
@@ -298,9 +307,18 @@ hasserls <- function(object,
   if (any(contains_symbols==TRUE)) {
     #fonts <- systemfonts::system_fonts()
     #fontlist <- unic_fonts[unic_fonts %in% fonts]
-    warning("The randomisation.objects argument contains Unicode characters, either '\u2297' or '\u2192'. \nThe hasse.font argument must be set to a Unicode friendly font family, \notherwise the Hasse diagram may be misleading, i.e., squares or question marks instead of the requested Unicode symbols. \nFor more details on Unicode friendly family options see the Details section in the documentation.")
+    warning(
+      "The randomisation.objects argument contains Unicode characters ('\u2297' or '\u2192').\n",
+      "Rendering depends on your operating system and font availability:\n",
+      " - On Windows, you may need to register the font with windowsFonts(), e.g.,\n",
+      "     windowsFonts(LucidaSansUnicode = windowsFont('Lucida Sans Unicode'))\n",
+      "   and then set hasse.font = 'LucidaSansUnicode'.\n",
+      " - On macOS, most system fonts support Unicode without registration.\n",
+      "Also note: PDF output on Windows may not display Unicode correctly with the default 'sans' font,\n",
+      "while macOS PDF output typically works with 'sans'.\n",
+      "For more guidance, see the Details section of ?hasserls."
+    )
   }
-  
   
   if (showpartialRLS=="Y" || showdfRLS=="Y"|| showrandRLS=="Y") showRLS <- "Y"
   
@@ -594,11 +612,21 @@ hasserls <- function(object,
     edge.color<-rep(structural.colour,length(fg2a.edges))
     edge.color[fg2a.edges %in% node.dumg]<-"transparent"
     
-    oldpar <- par(no.readonly = TRUE)
-    on.exit(par(oldpar), add = TRUE)
-    
-    par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))     
+    # oldpar <- par(no.readonly = TRUE)
+    # on.exit(par(oldpar), add = TRUE)
+    # 
+    # par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))     
 
+    if (all(par("mfrow") == c(1, 1))) {
+      
+      oldpar <- par(no.readonly = TRUE)
+      on.exit(par(oldpar), add = TRUE)
+      
+      par(mar = c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, 
+                  (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 
+                  0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))
+    }
+    
     tryCatch({
       plot(fg2a, asp=FALSE, add=F,vertex.label.color=vertex.label.color.black, vertex.label.cex=dscoords$textlabel.size, vertex.label.font=vertex.label.font, vertex.label.degree=pi/2, vertex.label.dist=0.4, vertex.size=5, vertex.color="transparent", vertex.shape="circle", vertex.frame.color="white", edge.color=edge.color, edge.width = edgewidth, vertex.label.family=font_used)
     }, error = function(e) {
@@ -644,14 +672,14 @@ hasserls <- function(object,
       V(fg3)$label <- V(fg3)$name
       fg3$layout <- dscoords$coords
       
-      par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))     
+      # par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))     
       
       plot(fg3, asp=FALSE, add=TRUE, vertex.label.color="transparent",vertex.label.cex=dscoords$textlabel.size, vertex.label.font=2, vertex.size=0, vertex.color="transparent", vertex.frame.color="transparent",  edge.label.color=Colourred, edge.label.font=2, edge.color=partial.colour, edge.lty=dottedline, edge.width = partial.width, vertex.label.family=font_used)
       
     }
     
     #Adds names of effects
-    par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))     
+    # par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))     
     
     plot(fg, asp=FALSE, add=T,vertex.label.color=vertex.label.color.objects, vertex.label.cex=dscoords$textlabel.size, vertex.label.font=vertex.label.font, vertex.size=0, vertex.color="transparent", vertex.frame.color="transparent", vertex.shape="circle", edge.lty=0, edge.width = edgewidth, vertex.label.family=font_used)
   }
@@ -685,7 +713,7 @@ hasserls <- function(object,
     vertex.label.dist.df4rand<-(1*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*1
     
     #Add degrees of freedom
-    par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))     
+    # par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))     
     
     plot(fg4fix, asp=FALSE, add=T,vertex.label.color=vertex.label.color.df, vertex.label.cex=dscoords$textlabel.size.df,  vertex.label.font=vertex.label.font, vertex.label.degree=pi/2, vertex.label.dist=vertex.label.dist.df4fix,vertex.size=0, vertex.color="transparent", vertex.frame.color="transparent", vertex.shape="circle", edge.lty=0, edge.width = edgewidth, vertex.label.family=font_used)
     plot(fg4rand, asp=FALSE, add=T,vertex.label.color=vertex.label.color.df, vertex.label.cex=dscoords$textlabel.size.df, vertex.label.font=vertex.label.font, vertex.label.degree=pi/2, vertex.label.dist=vertex.label.dist.df4rand,vertex.size=0, vertex.color="transparent", vertex.frame.color="transparent", vertex.shape="circle", edge.lty=0, edge.width = edgewidth, vertex.label.family=font_used)
@@ -706,7 +734,7 @@ hasserls <- function(object,
     V(fg5)$label <- V(fg5)$name
     fg5$layout <- dscoords$coords
     
-    par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))     
+    # par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))     
     
     plot(fg5, asp=FALSE, add=TRUE, vertex.label.color="transparent",vertex.label.cex=dscoords$textlabel.size, vertex.label.font=1, vertex.size=arrow.pos, 
          vertex.color="transparent", vertex.frame.color="transparent", edge.color=arrow.colour, edge.lty=2, edge.arrow.mode=1, edge.width=arrow.width, edge.arrow.size=0.4)

@@ -4,8 +4,8 @@
 #' @title Hasse diagram of the layout structure
 #' @description Returns a Hasse diagram of the layout structure of an experimental design 
 #' 
-#' @param datadesign A data frame, list or environment (or object coercible by \code{\link[base]{as.data.frame}} to a data frame) containing the variables/factors in the experimental design. The data frame should only include the variables/factors/columns that the user wants to include in the Hasse diagram.
-#' @param randomfacsid An optional vector specifying whether the factors are defined as fixed (entry = 0) or random (entry = 1). The default choice is NULL and the function automatically sets all entries to 0. The length of the vector should be equal to the number of variables/factors in the design, i.e., the length of the vector should be equal to the number of columns of the argument \code{datadesign}.
+#' @param datadesign A data frame, list or environment (or object coercible by \code{\link[base]{as.data.frame}} to a data frame) containing the factors in the experimental design. The data frame should \strong{only} include the factors/columns that the user wants to include in the Hasse diagram. All factors are treated as categorical. Moreover, the first two letters of factor names are used for interactions between factors so it is advised that these be unique.
+#' @param randomfacsid An optional vector specifying whether the factors are defined as fixed (entry = 0) or random (entry = 1). The default choice is NULL and the function automatically sets all entries to 0. The length of the vector should be equal to the number of factors in the design, i.e., the length of the vector should be equal to the number of columns of the argument \code{datadesign}.
 #' @param showLS logical. If "N" then generation of the Hasse diagram is suppressed. The default is "Y".
 #' @param showpartialLS logical. If "N" then the partial crossing between structural objects (using dotted connecting lines) is not illustrated on the Hasse diagram of the layout structure. The default is "Y".
 #' @param showdfLS logical. If "N" then the structural object label is not displayed on the Hasse diagram of the layout structure. The default is "Y".
@@ -30,15 +30,15 @@
 #'
 #' @details The hasselayout function generates the Hasse diagram of the layout structure of the experimental design, as described in Bate and Chatfield (2016a). The diagram consists of a set of structural objects, corresponding to the factors and generalised factors, and the relationships between the structural objects (either crossed, nested, partially crossed or equivalent), as defined by the structure of the experimental design.
 #'
-#' The function requires a dataframe containing only the variables corresponding to the experimental factors that define the experimental design (i.e., no response variables should be included). 
+#' The function requires a dataframe containing only the factors corresponding to the experimental factors that define the experimental design (i.e., no response should be included). 
 #'
-#' In the dataframe the levels of the variables/factors must be uniquely identified and have a physical meaning, otherwise the function will not correctly identify the nesting/crossing of the variables/factors. For example, consider an experiment consisting of Factor A (with k levels) that nests Factor B (with q levels per level of Factor A). The levels of Factor B should be labelled 1 to k x q and not 1 to q (repeated k times). 
+#' In the dataframe the levels of the factors must be uniquely identified and have a physical meaning, otherwise the function will not correctly identify the nesting/crossing of the factors. For example, consider an experiment consisting of Factor A (with k levels) that nests Factor B (with q levels per level of Factor A). The levels of Factor B should be labelled 1 to k x q and not 1 to q (repeated k times). 
 #'
 #' Where present, two partially crossed factors are illustrated on the diagram with a dotted line connecting them. This feature can be excluded using the \code{showpartialLS} option.
 #'
 #' The maximum number of possible levels of each generalised factor, along with the actual number present in the design and the "skeleton ANOVA" degrees of freedom, can be included in the structural object label on the Hasse diagram.
 #'
-#' Using the randomfacsid argument the factors that correspond to random effects can be highlighted by underlining them on the Hasse diagram. The vector should be equal to the number of variables/factors in the design and consist of fixed (entry = 0) or random (entry = 1) values.
+#' Using the randomfacsid argument the factors that correspond to random effects can be highlighted by underlining them on the Hasse diagram. The vector should be equal to the number of factors in the design and consist of fixed (entry = 0) or random (entry = 1) values.
 #'
 #' The \code{\link[hassediagrams]{hasselayout}} function evaluates the design in order to identify if there are any confounded degrees of freedom across the design. It is not recommended to perform this evaluation for large designs due to the potential high computational cost. This can be controlled using the check.confound.df = "N" option. 
 #'
@@ -173,6 +173,14 @@ hasselayout <- function(datadesign,
     warning("hasse.font is safe to be used for 'sans', 'serif', and 'mono'. \nYour selected font is not in that list, which may lead to potential errors.")
   }
   
+  old_names <- colnames(datadesign)
+  new_names <- gsub(" ", "_", old_names)
+  
+  if (!identical(old_names, new_names)) {
+    colnames(datadesign) <- new_names
+    warning("Spaces in datadesign column names have been replaced with underscores.")
+  }
+  
   if (showpartialLS=="Y" || showdfLS=="Y") showLS<-"Y"
   
   if (is.null(outdir)) {
@@ -184,10 +192,10 @@ hasselayout <- function(datadesign,
   check1 <- apply(datadesign, 2, function(a) length(unique(a))==1)
   
   if (any(check1==TRUE)) {
-    stop("One or more variables contain only identical elements.")
+    stop("One or more factors contain only identical elements.")
   }
   
-  if (!is.null(randomfacsid) & ncol(datadesign) != length(randomfacsid)) stop("The length of randomfacsid should be equal to the number of variables/columns of datadesign")
+  if (!is.null(randomfacsid) & ncol(datadesign) != length(randomfacsid)) stop("The length of randomfacsid should be equal to the number of columns of datadesign")
   
   nfacts <- ncol(datadesign)
   if (is.null(randomfacsid)) {
@@ -228,7 +236,7 @@ hasselayout <- function(datadesign,
   datadesign <- cbind(Mean=rep(1,length(datadesign[ ,1])),datadesign[ , ])
   
   if (length(colnames(datadesign)[apply(datadesign,2,anyna)])>0) {
-    warning("The following variables have missing values. Please check and complete the dataset ",colnames(datadesign)[apply(datadesign,2,anyna)])
+    warning("The following factors have missing values. Please check and complete the dataset ",colnames(datadesign)[apply(datadesign,2,anyna)])
     if (pdf=="Y") dev.off()
     stop()
   }
@@ -800,10 +808,21 @@ hasselayout <- function(datadesign,
     edge.color<-rep(structural.colour,length(g2a.edges))
     edge.color[g2a.edges %in% node.dumg]<-"transparent"
     
-    oldpar <- par(no.readonly = TRUE)
-    on.exit(par(oldpar), add = TRUE)
+    # oldpar <- par(no.readonly = TRUE)
+    # on.exit(par(oldpar), add = TRUE)
     
-    par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4)) 
+    # par(mar=c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 0.2, (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4)) 
+    
+    if (all(par("mfrow") == c(1, 1))) {
+      
+      oldpar <- par(no.readonly = TRUE)
+      on.exit(par(oldpar), add = TRUE)
+      
+      par(mar = c((2*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.8, 
+                  (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4, 
+                  0.2, 
+                  (5*(max(larger.fontlabelmultiplier,smaller.fontlabelmultiplier)-1)+1)*0.4))
+    }
     
     tryCatch({
       plot(g2a, asp=FALSE, add=F,vertex.label.color=vertex.label.color.black, vertex.label.cex=dscoords$textlabel.size,vertex.label.font=vertex.label.font, vertex.label.degree=pi/2, vertex.label.dist=0.6, vertex.size=5, vertex.color="transparent", vertex.shape="circle", vertex.frame.color="white", edge.color=edge.color, edge.width = edgewidth, vertex.label.family=font_used)

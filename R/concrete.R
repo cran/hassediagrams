@@ -2,7 +2,7 @@
 #'
 #' This is fractional factorial design given in Anderson and McLean (1974) p.256 from an experiment to investigate the effect of controllable variables/factors on the quality of asphalt concrete production.
 #'
-#' @format A half fraction factorial design of 16 runs on 6 variables/factors. The 6 variables/factors, each at two levels, included in the design are:
+#' @format A half fraction factorial design of 16 runs on 6 factors. The 6 factors, each at two levels, included in the design are:
 #' \describe{
 #'   \item{Aggregate gradation (AG)}{Categoric factor with levels being fine and coarse.}
 #'   \item{Compaction temperature (CoT)}{Numeric factor with low 250 and high 300.}
